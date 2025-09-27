@@ -31,6 +31,16 @@
         <div class="text">Inicia sesión para continuar</div>
         <h2>Registro Personal</h2>
 
+{% with msgs = get_flashed_messages() %}
+  {% if msgs %}
+    <div class="alert">
+      {% for m in msgs %}
+        <p>{{ m }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
         <!-- Formulario de login -->
         <form method="POST">
           <input type="text" name="usuario" placeholder="Usuario..." maxlength="50" 

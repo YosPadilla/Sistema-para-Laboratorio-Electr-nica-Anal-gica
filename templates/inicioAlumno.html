@@ -19,10 +19,7 @@
       padding: 15px 25px;
     }
 
-    header img {
-      width: 100px;
-      height: auto;
-    }
+    header img { width: 100px; height: auto; }
 
     h1 { color: #fff; margin-top: 20px; }
 
@@ -31,14 +28,21 @@
       padding: 25px;
       margin: 30px auto;
       width: 40%;
+      min-width: 320px;
       border-radius: 12px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+      text-align: left;
     }
 
+    .form-container h2 { margin-top: 0; }
+
+    label { font-weight: 600; display:block; margin-top: 12px; }
+
     input, select, button {
-      width: 90%;
+      width: 100%;
+      box-sizing: border-box;
       padding: 12px;
-      margin: 10px 0;
+      margin: 8px 0;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 16px;
@@ -50,30 +54,34 @@
       font-weight: bold;
       cursor: pointer;
       border: none;
-      transition: background 0.3s ease;
+      transition: background 0.2s ease-in-out, transform 0.05s ease;
     }
-
     button:hover { background: #0056b3; }
+    button:active { transform: translateY(1px); }
 
+    /* Flash messages */
     .flash {
-      padding: 15px;
+      padding: 14px 16px;
       margin: 15px auto;
-      width: 60%;
+      width: 40%;
+      min-width: 320px;
       border-radius: 10px;
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 16px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
     }
-    .flash.success { background: #28a745; color: white; }
-    .flash.error { background: #dc3545; color: white; }
+    .flash.success { background: #28a745; color: #fff; }
+    .flash.error   { background: #dc3545; color: #fff; }
   </style>
 </head>
 <body>
   <header>
-    <img src="static/sources/itislogo.png" alt="Logo ITS">
+    <img src="{{ url_for('static', filename='sources/itislogo.png') }}" alt="Logo ITS">
   </header>
 
   <h1>Registro de Alumnos</h1>
 
+  {# Mensajes flash con categorías (success/error) #}
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, msg in messages %}
@@ -83,27 +91,60 @@
   {% endwith %}
 
   <div class="form-container">
-    <form method="POST">
-      <input type="text" name="nombre" placeholder="Nombre completo" maxlength="50"
-      oninput="this.value = this.value.replace(/[0-9]/g, '')">
-      <input type="text" name="numero_control" placeholder="Número de control" maxlength="9"
-      oninput="this.value = this.value.replace(/[^A-Za-z0-9]/g, '')">
+    <h2>Prerregistro</h2>
+    <form method="POST" action="/registro_alumno" novalidate>
+      <label for="nombre">Nombre completo</label>
+      <input
+        type="text"
+        id="nombre"
+        name="nombre"
+        placeholder="Nombre completo"
+        maxlength="50"
+        required
+        oninput="this.value=this.value.replace(/[0-9]/g,'')"
+      >
 
-      <input type="text" name="correo" placeholder="Correo institucional" maxlength="100">
+      <label for="numero_control">Número de control</label>
+      <input
+        type="text"
+        id="numero_control"
+        name="numero_control"
+        placeholder="9 dígitos o C########"
+        maxlength="9"
+        pattern="[Cc]?\d{8}"
+        title="Formato permitido: 22051257 o C22051257"
+        required
+        oninput="this.value=this.value.toUpperCase().replace(/[^C0-9]/g,'')"
+      >
 
-      <select name="carrera">
+      <label for="correo">Correo institucional</label>
+      <input
+        type="email"
+        id="correo"
+        name="correo"
+        placeholder="l22051257@saltillo.tecnm.mx"
+        maxlength="100"
+        pattern="[Ll]\d{8}@saltillo\.tecnm\.mx"
+        title="Usa tu correo institucional: L########@saltillo.tecnm.mx"
+        required
+        oninput="this.value=this.value.toLowerCase()"
+      >
+
+      <label for="carrera">Carrera</label>
+      <select id="carrera" name="carrera" required>
         <option value="">Selecciona tu carrera</option>
-        <option value="sistemas">Sistemas</option>
-        <option value="industrial">Industrial</option>
-        <option value="gestion">Gestión</option>
-        <option value="materiales">Materiales</option>
-        <option value="electronica">Electrónica</option>
-        <option value="mecatronica">Mecatrónica</option>
-        <option value="electrica">Eléctrica</option>
-        <option value="mecanica">Mecánica</option>
+        <option value="ISC">Sistemas</option>
+        <option value="II">Industrial</option>
+        <option value="IG">Gestión</option>
+        <option value="IM">Materiales</option>
+        <option value="EL">Electrónica</option>
+        <option value="MECA">Mecatrónica</option>
+        <option value="ELEC">Eléctrica</option>
+        <option value="MEC">Mecánica</option>
       </select>
 
-      <select name="semestre">
+      <label for="semestre">Semestre</label>
+      <select id="semestre" name="semestre" required>
         <option value="">Selecciona tu semestre</option>
         {% for i in range(1,14) %}
           <option value="{{ i }}">{{ i }}</option>
@@ -115,3 +156,4 @@
   </div>
 </body>
 </html>
+
