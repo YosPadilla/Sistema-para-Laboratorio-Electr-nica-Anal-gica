@@ -5,7 +5,6 @@
     text-transform: capitalize;
     text-decoration: none;
     list-style: none;
-
     font-family: 'Open Sans', sans-serif;
 
 }
@@ -21,7 +20,7 @@ header {
     min-height: 70vh;
     display: flex;
     align-items: center;
-    background-image: url(/static/sources/bck.png);
+    background-image: url(/static/sources/bck.jpg);
 
 
 }

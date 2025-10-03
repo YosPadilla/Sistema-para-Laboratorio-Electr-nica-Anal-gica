@@ -1,100 +1,140 @@
 /* Fuente general */
+*{
+  font-family: 'Open Sans', sans-serif;
+}
 body {
   margin: 0;
-  font-family: 'Open Sans', sans-serif;
-  background: #fff;
+  background: linear-gradient(rgba(4,9,30,0.7), rgba(4, 9, 30, 0.7)), url(/static/sources/fondo-login.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-/* Contenedor principal (lado izquierdo y derecho) */
-.container {
+.box{
   display: flex;
-  height: 100vh;
+  justify-content: center;
   align-items: center;
-  justify-content: center; /* Centra los bloques */
-  padding: 20px;
-  gap: 50px; /* espacio entre izquierda y derecha */
+  min-height: 90vh;
 }
 
-/* Sección izquierda */
-.left {
-  flex: 1;
-  text-align: center;
+.container{
+  width: 350px;
+
+display: flex;
+flex-direction: column;
+padding: 0 15px 0 15px;
 }
 
-.left .Logo {
-  width: 180px; /* tamaño más grande pero proporcional */
-  max-width: 90%; /* no se pase de la pantalla */
-  height: auto;
-  margin-bottom: 20px;
+span{
+  color: #fff;
+  font-size: small;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 10px 0;
 }
 
-.left h1 {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 15px;
+header{
+  color: #fff;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 10px 0;
 }
 
-.left h2 {
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1.4;
-  color: #333;
-}
-
-/* Sección derecha (login) */
-.right {
-  flex: 1;
-  max-width: 400px; /* ancho más controlado */
-  background-color: #8a3d3d; /* color rojo vino */
-  padding: 60px 40px; /* menos padding para no exagerar */
-  border-radius: 10px;
-  color: white;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* efecto sombra */
-}
-
-.right h2 {
-  margin-bottom: 30px;
-  font-weight: 600;
-  font-size: 24px;
-}
-
-/* Inputs y botón */
-form input {
-  display: block;
-  width: 90%; /* más ancho */
-  margin: 15px auto;
-  padding: 14px;
-  font-size: 16px;
+.input-box .input{
+  height: 45px;
+  width: 87%;
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
+  color: #fff;
+  font-size: 15px;
+  padding: 0 0 0 45px;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
 }
 
-form button {
-  background-color: #6e1e1e;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 14px 0;
+i{
+  position: relative;
+  top: -33px;
+  left: 17px;
+  color: #fff;
+}
+
+::-webkit-input-placeholder{
+  color: #fff;
+}
+
+.submit{
   border: none;
-  border-radius: 7px;
+  border-radius: 30px;
+  font-size: 15px;
+  height: 45px;
+  outline: none;
+  width: 100%;
+  color: #000;
+  background: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  width: 50%; /* botón más grande y visible */
-  margin-top: 20px;
+  margin-top: 10px;
+  transition: .3s;
 }
 
-form button:hover {
-  background-color: #5a1717;
+.submit:hover{
+  box-shadow: 1px 5px 7px 1px rgba(0,0,0,0.2);
+}
+.two-col{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: #fff;
+  font-size: small;
+  margin-top: 10px;
 }
 
-/* Mensajes flash */
-.flash-messages {
-  list-style: none;
+.one{
+  display: flex;
+}
+
+label{
+  text-decoration: none;
+
+}
+h1{
+  color: #fff;
+  font-size: 40px;
+  display: flex;
+  justify-content: left;
   padding: 0;
-  margin-top: 15px;
+  margin-left: 20px;
 }
 
-.flash-messages li {
-  font-size: 14px;
-  color: #ffdddd;
+.logo{
+  width: 100px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding-top: 10px;
+  padding-right: 10px;
+}
+
+.flash {
+  padding: 14px 16px;
+  margin: 15px auto;
+  width: 90%;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+  text-align: center;
+}
+
+.flash.success { 
+  background: #7e1c1c;
+  color: #fff; 
+}
+.flash.error, .flash { 
+  background: #5a5a5a; 
+  color: #fff; 
 }

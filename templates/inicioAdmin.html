@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Inicio del Personal del Laboratorio</title>
+    <!-- CSS -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/static/css/stile.css"/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <h1>Laboratorio de Electrónica/Analógica</h1>
+    <img class="logo" src="/static/sources/itislogo.png" alt="">
+
+    <div class="box">
+      <div class="container">
+        <header>Inicia Sesión</header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, msg in messages %}
+              <div class="flash {{ category }}">{{ msg }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Formulario de login -->
+        <form action="{{ url_for('login') }}" method="post" novalidate>
+          <!-- Campo oculto para redirigir a la ruta destino tras login -->
+          <input type="hidden" name="next" value="{{ next or request.args.get('next','') }}">
+
+          <div class="input-box">
+            <input
+              type="text"
+              class="input"
+              name="usuario"
+              placeholder="Nombre de usuario..."
+              maxlength="50"
+              autocomplete="username"
+              required
+              autofocus
+            />
+            <i class="bx bx-user" aria-hidden="true"></i>
+          </div>
+
+          <div class="input-box">
+            <input
+              type="password"
+              class="input"
+              name="contrasena"
+              placeholder="Contraseña..."
+              maxlength="50"
+              autocomplete="current-password"
+              required
+            />
+            <i class="bx bx-lock-alt" aria-hidden="true"></i>
+          </div>
+
+          <div class="input-box">
+            <input type="submit" class="submit" value="Iniciar Sesión">
+          </div>
+
+          {% if mensaje %}
+            <p style="color: rgb(142, 217, 255); font-weight: bold;">{{ mensaje }}</p>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
