@@ -20,7 +20,7 @@
                 <ul>
                     <li><a href="#">Inicio</a></li>
                     <li><a href="#">Prestamos</a></li>
-                    <li><a href="#">Inventario</a></li>
+                    <li><a href="{{ url_for('inventario') }}">Inventario</a></li>
                     <li><a href="#">Generar reportes</a></li>
                     <li><a href="#">Gestión de auxiliares</a></li>
                 </ul>
@@ -50,7 +50,7 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
                 Error quae, voluptatibus rem officia distinctio soluta 
             </p>
-            <a href="#" class="btn-1">IR</a>
+            <a href="{{ url_for('inventario') }}" class="btn-1">IR</a>
         </div>
         <div class="box">
             <img src="/static/sources/reportes.png" alt="">

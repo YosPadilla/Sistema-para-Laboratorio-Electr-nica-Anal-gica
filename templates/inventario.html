@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Laboratorio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .main-title {
+            font-weight: bold;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #007bff;
+            padding-right: 10px;
+        }
+        .action-button {
+            margin-right: 10px;
+        }
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+        .status-dot.disponible { background-color: #28a745; /* Verde */ }
+        .status-dot.en-uso { background-color: #ffc107; /* Amarillo */ }
+        .status-dot.no-disponible { background-color: #dc3545; /* Rojo */ }
+        
+        .inventory-table tr {
+            cursor: pointer;
+        }
+        .inventory-table tr.selected {
+            background-color: #cfe2ff !important; /* Color de selección para Bootstrap (Azul claro) */
+        }
+        
+        /* Estilos para el encabezado de la tabla */
+        .inventory-table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        /* Estilo para el contenedor de mensajes flash */
+        .flash-messages-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050; 
+            max-width: 300px;
+        }
+
+        /* 🎨 Color personalizado para Eliminar y Modificar */
+        .btn-custom-danger, .modal-header.bg-custom-danger {
+            background-color: #ab4242 !important;
+            border-color: #ab4242 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flash-messages-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'message' else 'warning' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <nav class="header-section">
+        <div class="d-flex align-items-center">
+            <span class="nav-link text-muted"><a href="{{ url_for('inventario') }}">Inventario</a></span>
+            <span class="nav-link">&gt;</span>
+        </div>
+    </nav>
+    <hr>
+
+    <h2 class="main-title mb-4">Material</h2>
+    <div class="d-flex mb-4 align-items-center">
+        <button class="btn btn-primary action-button" data-bs-toggle="modal" data-bs-target="#agregarMaterialModal">Agregar material</button>
+        <button id="btnEliminar" class="btn btn-custom-danger action-button" disabled>Eliminar material</button>
+        <button id="btnModificar" class="btn btn-custom-danger action-button" data-bs-toggle="modal" data-bs-target="#modificarMaterialModal" disabled>Modificar material</button>
+        
+        <div class="input-group ms-auto" style="max-width: 300px;">
+            <input type="text" class="form-control" id="inputBusqueda" placeholder="Buscar material" aria-label="Buscar material">
+            <span class="input-group-text" id="searchIcon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+            </span>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover inventory-table">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Marca/modelo</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Disponibles</th>
+                    <th scope="col">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materiales %}
+                <tr data-id="{{ material.ID_MATERIAL }}" 
+                    data-nombre="{{ material.NOMBRE }}" 
+                    data-tipo="{{ material.TIPO }}"
+                    data-marca-modelo="{{ material.MARCA_MODELO }}"
+                    data-cantidad="{{ material.CANTIDAD }}"
+                    data-estado="{{ material.ESTATUS }}">
+                    <td>{{ material.ID_MATERIAL }}</td>
+                    <td>{{ material.NOMBRE }}</td>
+                    <td>{{ material.TIPO }}</td>
+                    <td>{{ material.MARCA_MODELO }}</td>
+                    <td>{{ material.CANTIDAD }}</td>
+                    <td>{{ material.CANTIDAD_DISPONIBLE }}</td>
+                    <td>
+                        {{ material.ESTATUS }}
+                        {% set status_class = 'disponible' if material.ESTATUS == 'Disponible' else ('en-uso' if material.ESTATUS == 'En uso' else 'no-disponible') %}
+                        <span class="status-dot {{ status_class }}"></span>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not materiales %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No hay registros de materiales en el inventario.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-5">
+        <a href="#" class="btn btn-outline-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/></svg>
+            Regresar
+        </a>
+    </div>
+
+    <div class="modal fade" id="agregarMaterialModal" tabindex="-1" aria-labelledby="agregarMaterialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formAgregarMaterial" method="POST" action="{{ url_for('agregar_material') }}" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="agregarMaterialModalLabel">Agregar Nuevo Material</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="addNombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="addNombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addTipo" class="form-label">Tipo</label>
+                            <input type="text" class="form-control" id="addTipo" name="tipo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addMarcaModelo" class="form-label">Marca/Modelo</label>
+                            <input type="text" class="form-control" id="addMarcaModelo" name="marca_modelo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addCantidad" class="form-label">Cantidad *</label>
+                            <input type="number" class="form-control" id="addCantidad" name="cantidad" required min="1">
+                        </div>
+                        <!-- CAMPO ESTATUS (ESTADO) ELIMINADO CORRECTAMENTE -->
+                        <small class="text-danger">* Campos obligatorios</small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Material</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modificarMaterialModal" tabindex="-1" aria-labelledby="modificarMaterialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                 <form id="formModificarMaterial" method="POST" action="{{ url_for('modificar_material') }}" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modificarMaterialModalLabel">Modificar Material</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="modIDMaterial" name="id_material">
+                        
+                        <div class="mb-3">
+                            <label for="modNombre" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="modNombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modTipo" class="form-label">Tipo</label>
+                            <input type="text" class="form-control" id="modTipo" name="tipo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="modMarcaModelo" class="form-label">Marca/Modelo</label>
+                            <input type="text" class="form-control" id="modMarcaModelo" name="marca_modelo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="modCantidad" class="form-label">Cantidad *</label>
+                            <input type="number" class="form-control" id="modCantidad" name="cantidad" required min="1">
+                        </div>
+                        <!-- CAMPO ESTATUS (ESTADO) ELIMINADO CORRECTAMENTE -->
+                        <small class="text-danger">* Campos obligatorios</small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="eliminarMaterialModal" tabindex="-1" aria-labelledby="eliminarMaterialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formEliminarMaterial" method="POST" action="{{ url_for('eliminar_material') }}">
+                    <div class="modal-header bg-custom-danger text-white">
+                        <h5 class="modal-title" id="eliminarMaterialModalLabel">Confirmar Eliminación</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="delIDMaterial" name="id_material">
+                        <p>¿Estás seguro de que deseas **eliminar** el material con ID: <strong id="delMaterialIDText"></strong> y nombre: <strong id="delMaterialNombreText"></strong>?</p>
+                        <p class="text-danger">¡Esta acción no se puede deshacer!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-custom-danger">Eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('.inventory-table tbody');
+            const btnModificar = document.getElementById('btnModificar');
+            const btnEliminar = document.getElementById('btnEliminar');
+            const inputBusqueda = document.getElementById('inputBusqueda');
+            const searchIcon = document.getElementById('searchIcon');
+            let selectedRow = null;
+            
+            const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarMaterialModal'));
+
+            // 1. Manejo de la selección de fila
+            function updateSelectedRow(row) {
+                if (selectedRow) {
+                    selectedRow.classList.remove('selected');
+                }
+
+                if (selectedRow === row) {
+                    selectedRow = null; // Deseleccionar
+                } else {
+                    row.classList.add('selected');
+                    selectedRow = row;
+                }
+
+                // Habilitar/Deshabilitar botones
+                const isRowSelected = selectedRow !== null;
+                btnModificar.disabled = !isRowSelected;
+                btnEliminar.disabled = !isRowSelected;
+            }
+
+            table.addEventListener('click', function(event) {
+                let row = event.target.closest('tr');
+                if (!row || !row.dataset.id) return; 
+                updateSelectedRow(row);
+            });
+
+            // 2. Lógica para poblar el Modal de Modificar
+            const modificarMaterialModal = document.getElementById('modificarMaterialModal');
+            modificarMaterialModal.addEventListener('show.bs.modal', function (event) {
+                if (!selectedRow) {
+                    event.preventDefault(); 
+                    return; 
+                }
+                
+                // Obtener datos de la fila seleccionada
+                const id = selectedRow.dataset.id;
+                const nombre = selectedRow.dataset.nombre;
+                const tipo = selectedRow.dataset.tipo;
+                const marcaModelo = selectedRow.dataset.marcaModelo;
+                const cantidad = selectedRow.dataset.cantidad;
+
+                // Llenar el formulario del modal
+                document.getElementById('modIDMaterial').value = id;
+                document.getElementById('modNombre').value = nombre;
+                document.getElementById('modTipo').value = tipo;
+                document.getElementById('modMarcaModelo').value = marcaModelo;
+                document.getElementById('modCantidad').value = cantidad;
+            });
+            
+            // 3. Lógica del Botón Eliminar (Abre el modal de confirmación)
+            btnEliminar.addEventListener('click', function() {
+                if (selectedRow) {
+                    const id = selectedRow.dataset.id;
+                    const nombre = selectedRow.dataset.nombre;
+                    
+                    // Llenar el modal de eliminación
+                    document.getElementById('delIDMaterial').value = id;
+                    document.getElementById('delMaterialIDText').textContent = id;
+                    document.getElementById('delMaterialNombreText').textContent = nombre;
+
+                    eliminarModal.show(); 
+                }
+            });
+
+            // 4. Lógica de Búsqueda (Filtro en tiempo real)
+            inputBusqueda.addEventListener('keyup', function() {
+                const filter = inputBusqueda.value.toUpperCase();
+                const rows = table.querySelectorAll('tr');
+
+                rows.forEach(row => {
+                    let textContent = row.textContent || row.innerText;
+                    
+                    if (textContent.toUpperCase().indexOf(filter) > -1) {
+                        row.style.display = ""; // Mostrar fila
+                    } else {
+                        row.style.display = "none"; // Ocultar fila
+                    }
+                    
+                    // Si la fila seleccionada se oculta, deseleccionarla
+                    if (row.style.display === "none" && row === selectedRow) {
+                        updateSelectedRow(row); 
+                    }
+                });
+            });
+            
+            // 🔍 Al hacer clic en el ícono de lupa, enfoca el campo de texto.
+            searchIcon.addEventListener('click', function() {
+                inputBusqueda.focus(); 
+            });
+
+            // 5. Lógica de Validación (Frontend)
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+</body>
+</html>

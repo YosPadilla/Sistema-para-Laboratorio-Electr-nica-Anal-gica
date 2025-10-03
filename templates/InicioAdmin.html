@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <title>Inicio del Personal del Laboratorio</title>
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stile.css') }}" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/static/css/stile.css"/>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,45 +16,43 @@
   </head>
 
   <body>
+    <h1>Laboratorio de Electrónica/Analógica</h1>
+    <img class="logo" src="/static/sources/itislogo.png" alt="">
+    <div class="box">
     <div class="container">
-      <!-- Sección izquierda -->
-      <div class="left">
-        <img src="{{ url_for('static', filename='sources/itislogo.png') }}" alt="Logo ITS" class="Logo" />
-        <h1>Instituto Tecnológico de Saltillo</h1>
-        <h2>
-          Laboratorio de <br />
-          Electrónica / Analógica
-        </h2>
-      </div>
-
-      <!-- Sección derecha (login) -->
-      <div class="right">
-        <div class="text">Inicia sesión para continuar</div>
-        <h2>Registro Personal</h2>
-
-{% with msgs = get_flashed_messages() %}
-  {% if msgs %}
-    <div class="alert">
-      {% for m in msgs %}
-        <p>{{ m }}</p>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
-
-        <!-- Formulario de login -->
-        <form method="POST">
-          <input type="text" name="usuario" placeholder="Usuario..." maxlength="50" 
-              oninput="this.value = this.value.replace(/[0-9]/g, '')">
-          <input type="password" name="contrasena" placeholder="Contraseña..." maxlength="50"  />
-          <button type="submit">Iniciar sesión</button>
-        </form>
-        
-        {% if mensaje %}
-          <p style="color: yellow; font-weight: bold;">{{ mensaje }}</p>
+      
+      <header> Inicia Sesión</header>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, msg in messages %}
+            <div class="flash {{ category }}">{{ msg }}</div>
+          {% endfor %}
         {% endif %}
-        
+      {% endwith %}
+      
+      <form action="{{ url_for('login') }}" method="post">
+<!-- Formulario de login -->
+      <form action="{{ url_for('login') }}" method="post">
+      <div class="input-box">
+          <input type="text" class="input" name="usuario" placeholder="Nombre de usuario..." maxlength="50" 
+              oninput="this.value = this.value.replace(/[0-9]/g, '')" />
+              <i class="bx bx-user"></i>
+      </div>
+
+      <div class="input-box">
+          <input type="password" class="input" name="contrasena" placeholder="Contraseña..." maxlength="50"  />
+          <i class="bx bx-lock-alt"></i>
+      </div>
+
+      <div class="input-box">
+        <input type="submit" class="submit" value="Iniciar Sesión" >
+      </div>
+
+        {% if mensaje %}
+          <p style="color: rgb(142, 217, 255); font-weight: bold;">{{ mensaje }}</p>
+        {% endif %}
       </div>
     </div>
+    </form>
   </body>
 </html>

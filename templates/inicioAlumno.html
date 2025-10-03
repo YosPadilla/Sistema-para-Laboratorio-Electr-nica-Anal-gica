@@ -3,157 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <title>Registro de Alumnos</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #8a3d3d;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 15px 25px;
-    }
-
-    header img { width: 100px; height: auto; }
-
-    h1 { color: #fff; margin-top: 20px; }
-
-    .form-container {
-      background: white;
-      padding: 25px;
-      margin: 30px auto;
-      width: 40%;
-      min-width: 320px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
-      text-align: left;
-    }
-
-    .form-container h2 { margin-top: 0; }
-
-    label { font-weight: 600; display:block; margin-top: 12px; }
-
-    input, select, button {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      background: #007bff;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      border: none;
-      transition: background 0.2s ease-in-out, transform 0.05s ease;
-    }
-    button:hover { background: #0056b3; }
-    button:active { transform: translateY(1px); }
-
-    /* Flash messages */
-    .flash {
-      padding: 14px 16px;
-      margin: 15px auto;
-      width: 40%;
-      min-width: 320px;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      box-shadow: 0 2px 6px rgba(0,0,0,.15);
-    }
-    .flash.success { background: #28a745; color: #fff; }
-    .flash.error   { background: #dc3545; color: #fff; }
-  </style>
+  <link rel="stylesheet" href="/static/css/stile_inAlum.css">
 </head>
 <body>
-  <header>
-    <img src="{{ url_for('static', filename='sources/itislogo.png') }}" alt="Logo ITS">
-  </header>
+  <div class="main-container">
+    <header class="app-header">
+      <div class="logo">Laboratorio de Electrónica/ Analógica</div>
+    </header>
 
-  <h1>Registro de Alumnos</h1>
+    <div class="content-wrapper">
+      {# Mensajes flash con categorías (success/error) - Mantenido #}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, msg in messages %}
+            <div class="flash {{ category }}">{{ msg }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
 
-  {# Mensajes flash con categorías (success/error) #}
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, msg in messages %}
-        <div class="flash {{ category }}">{{ msg }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+      <div class="form-card">
+        <p class="start-free-text">Registro de Alumnos</p>
+        <h1>Crea una nueva cuenta</h1>
+        <p class="member-text">Este registro te da acceso al meterial del Laboratorio</p>
 
-  <div class="form-container">
-    <h2>Prerregistro</h2>
-    <form method="POST" action="/registro_alumno" novalidate>
-      <label for="nombre">Nombre completo</label>
-      <input
-        type="text"
-        id="nombre"
-        name="nombre"
-        placeholder="Nombre completo"
-        maxlength="50"
-        required
-        oninput="this.value=this.value.replace(/[0-9]/g,'')"
-      >
+        <form method="POST" action="/registro_alumno" novalidate>
+          
+          <div class="input-group">
+            
+            <div class="input-field">
+              <label for="nombre">Nombre completo</label>
+              <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" maxlength="50"
+                    oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
+            </div>
+            
+            <div class="input-field">
+              <label for="numero_control">Número de control</label>
+              <input type="text" id="numero_control" name="numero_control" placeholder="9 dígitos" maxlength="9"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+            </div>
+          </div>
+          
+          <div class="input-field full-width">
+            <label for="correo">Correo institucional</label>
+            <input type="email" id="correo" name="correo" placeholder="ltunumerodecontrol@saltillo.tecnm.mx" maxlength="100" required>
+          </div>
 
-      <label for="numero_control">Número de control</label>
-      <input
-        type="text"
-        id="numero_control"
-        name="numero_control"
-        placeholder="9 dígitos o C########"
-        maxlength="9"
-        pattern="[Cc]?\d{8}"
-        title="Formato permitido: 22051257 o C22051257"
-        required
-        oninput="this.value=this.value.toUpperCase().replace(/[^C0-9]/g,'')"
-      >
-
-      <label for="correo">Correo institucional</label>
-      <input
-        type="email"
-        id="correo"
-        name="correo"
-        placeholder="l22051257@saltillo.tecnm.mx"
-        maxlength="100"
-        pattern="[Ll]\d{8}@saltillo\.tecnm\.mx"
-        title="Usa tu correo institucional: L########@saltillo.tecnm.mx"
-        required
-        oninput="this.value=this.value.toLowerCase()"
-      >
-
-      <label for="carrera">Carrera</label>
-      <select id="carrera" name="carrera" required>
-        <option value="">Selecciona tu carrera</option>
-        <option value="ISC">Sistemas</option>
-        <option value="II">Industrial</option>
-        <option value="IG">Gestión</option>
-        <option value="IM">Materiales</option>
-        <option value="EL">Electrónica</option>
-        <option value="MECA">Mecatrónica</option>
-        <option value="ELEC">Eléctrica</option>
-        <option value="MEC">Mecánica</option>
-      </select>
-
-      <label for="semestre">Semestre</label>
-      <select id="semestre" name="semestre" required>
-        <option value="">Selecciona tu semestre</option>
-        {% for i in range(1,14) %}
-          <option value="{{ i }}">{{ i }}</option>
-        {% endfor %}
-      </select>
-
-      <button type="submit">Registrar</button>
-    </form>
+          <div class="input-field full-width">
+            <label for="carrera">Carrera</label>
+            <select id="carrera" name="carrera" required>
+              <option value="">Selecciona tu carrera</option>
+              <option value="ISC">Sistemas</option>
+              <option value="II">Industrial</option>
+              <option value="IG">Gestión</option>
+              <option value="IM">Materiales</option>
+              <option value="EL">Electrónica</option>
+              <option value="MECA">Mecatrónica</option>
+              <option value="ELEC">Eléctrica</option>
+              <option value="MEC">Mecánica</option>
+            </select>
+          </div>
+          
+          <div class="input-field full-width">
+            <label for="semestre">Semestre</label>
+            <select id="semestre" name="semestre" required>
+              <option value="">Selecciona tu semestre</option>
+              {% for i in range(1,14) %}
+                <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="button-group">
+            <button type="submit" class="btn-primary">Registrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <div class="app-branding">ITS</div>
   </div>
 </body>
 </html>
-
