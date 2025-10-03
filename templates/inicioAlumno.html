@@ -8,7 +8,7 @@
 <body>
   <div class="main-container">
     <header class="app-header">
-      <div class="logo">Laboratorio de Electrónica/ Analógica</div>
+      <div class="logo">Laboratorio de Electrónica / Analógica</div>
     </header>
 
     <div class="content-wrapper">
@@ -23,29 +23,69 @@
 
       <div class="form-card">
         <p class="start-free-text">Registro de Alumnos</p>
-        <h1>Crea una nueva cuenta</h1>
-        <p class="member-text">Este registro te da acceso al meterial del Laboratorio</p>
+        <h1>Completa el formulario</h1>
+        <p class="member-text">Realiza el siguiente registro para solicitar material de Laboratorio</p>
 
         <form method="POST" action="/registro_alumno" novalidate>
           
           <div class="input-group">
-            
             <div class="input-field">
               <label for="nombre">Nombre completo</label>
-              <input type="text" id="nombre" name="nombre" placeholder="Nombre completo" maxlength="50"
-                    oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                placeholder="Nombre completo"
+                maxlength="50"
+                oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                required
+              >
             </div>
             
             <div class="input-field">
               <label for="numero_control">Número de control</label>
-              <input type="text" id="numero_control" name="numero_control" placeholder="9 dígitos" maxlength="9"
-                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+              <!-- Permite C######## o ######## -->
+              <input
+                type="text"
+                id="numero_control"
+                name="numero_control"
+                placeholder="C12345678 o 12345678"
+                maxlength="9"
+                inputmode="numeric"
+                autocomplete="off"
+                required
+                pattern="^([Cc]\d{8}|\d{8})$"
+                oninput="
+                  // 1) Quita espacios
+                  this.value = this.value.replace(/\s+/g, '');
+                  // 2) A mayúsculas
+                  this.value = this.value.toUpperCase();
+                  // 3) Si empieza con C: 'C' + hasta 8 dígitos; si no: hasta 8 dígitos
+                  if (this.value.startsWith('C')) {
+                    this.value = 'C' + this.value.slice(1).replace(/[^0-9]/g, '').slice(0, 8);
+                  } else {
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+                  }
+                "
+              >
+              <small>Formato: C + 8 dígitos (ej. C12345678) o solo 8 dígitos (ej. 12345678)</small>
             </div>
           </div>
           
           <div class="input-field full-width">
             <label for="correo">Correo institucional</label>
-            <input type="email" id="correo" name="correo" placeholder="ltunumerodecontrol@saltillo.tecnm.mx" maxlength="100" required>
+            <input
+              type="email"
+              id="correo"
+              name="correo"
+              placeholder="l########@saltillo.tecnm.mx"
+              maxlength="100"
+              required
+              oninput="
+                // Elimina espacios y pasa a minúsculas para mejor UX (el backend también lo normaliza)
+                this.value = this.value.replace(/\s+/g, '').toLowerCase();
+              "
+            >
           </div>
 
           <div class="input-field full-width">
